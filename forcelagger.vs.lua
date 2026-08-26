@@ -1,3 +1,114 @@
+-- ============================================================
+--  SISTEMA DE 5 CONTRASEÑAS (cambia las claves aquí abajo)
+-- ============================================================
+local CLAVES_AUTORIZADAS = {
+    "clave1",   -- abdob268avwknauv288
+    "clave2",   -- aabelbwjavhw618vsuabw
+    "clave3",   -- baowbauvwoba681vs82ba8
+    "clave4",   -- abkebqkbek63g8aveiib
+    "clave5"    -- vauv387r2vian8qvr7vwna
+}
+
+-- Validación de clave
+local function verificarClave(input)
+    for _, clave in ipairs(CLAVES_AUTORIZADAS)
+        if input == clave then
+            return true
+        end
+    end
+    return false
+end
+
+-- Interfaz para pedir la clave (con 3 intentos)
+local function preguntarContrasena()
+    local screenGui = Instance.new("ScreenGui")
+    local frame = Instance.new("Frame")
+    local label = Instance.new("TextLabel")
+    local textBox = Instance.new("TextBox")
+    local boton = Instance.new("TextButton")
+    local resultado = false
+    local intentos = 0
+
+    screenGui.Name = "PasswordGui"
+    screenGui.Parent = game:GetService("CoreGui")
+
+    frame.Size = UDim2.new(0, 300, 0, 150)
+    frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    frame.BorderSizePixel = 0
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+    frame.Parent = screenGui
+
+    label.Size = UDim2.new(1, 0, 0, 30)
+    label.Position = UDim2.new(0, 0, 0, 10)
+    label.BackgroundTransparency = 1
+    label.Text = " INGRESA TU CLAVE"
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextSize = 16
+    label.Font = Enum.Font.GothamBold
+    label.TextScaled = true
+    label.Parent = frame
+
+    textBox.Size = UDim2.new(0.8, 0, 0, 35)
+    textBox.Position = UDim2.new(0.1, 0, 0, 50)
+    textBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textBox.TextSize = 14
+    textBox.Font = Enum.Font.Gotham
+    textBox.PlaceholderText = "Escribe tu clave..."
+    textBox.ClearTextOnFocus = false
+    textBox.Parent = frame
+    Instance.new("UICorner", textBox).CornerRadius = UDim.new(0, 6)
+
+    boton.Size = UDim2.new(0.4, 0, 0, 35)
+    boton.Position = UDim2.new(0.3, 0, 0, 100)
+    boton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    boton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    boton.TextSize = 14
+    boton.Font = Enum.Font.GothamBold
+    boton.Text = "ENTRAR"
+    boton.Parent = frame
+    Instance.new("UICorner", boton).CornerRadius = UDim.new(0, 6)
+
+    boton.MouseButton1Click:Connect(function()
+        if verificarClave(textBox.Text) then
+            resultado = true
+            screenGui:Destroy()
+        else
+            intentos = intentos + 1
+            if intentos >= 3 then
+                label.Text = "❌ CLAVE INCORRECTA (3 intentos)"
+                label.TextColor3 = Color3.fromRGB(255, 50, 50)
+                task.wait(1)
+                screenGui:Destroy()
+                return
+            else
+                label.Text = " CLAVE INCORRECTA - Intento " .. intentos .. "/3"
+                label.TextColor3 = Color3.fromRGB(255, 50, 50)
+                textBox.Text = ""
+            end
+        end
+    end)
+
+    textBox.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            boton.MouseButton1Click:Fire()
+        end
+    end)
+
+    -- Esperar hasta que se ingrese una clave válida o se cierre por fallos
+    repeat task.wait() until resultado or not screenGui.Parent
+    return resultado
+end
+
+-- Si no se supera la verificación, se detiene todo
+if not preguntarContrasena() then
+    return
+end
+
+-- ============================================================
+--  AQUÍ COMIENZA EL SCRIPT ORIGINAL (NO MODIFICAR)
+-- ============================================================
 --// SERVICES
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -9,7 +120,7 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local ConfigFile = "ForceHubConfig.json"
 
--- ⚡ PODER EXACTO: 25 - 32 - 70
+--  PODER EXACTO: 25 - 32 - 70
 local NIVELES = {
     Low     = { poder = 25 },
     Mid     = { poder = 32 },
@@ -23,7 +134,7 @@ local lagThread = nil
 local nivelActual = "Low"
 local ventanaBloqueada = false
 
--- 🎨 ESTILO OSCURO (FONDO NEGRO, TEXTO BLANCO)
+--  ESTILO OSCURO (FONDO NEGRO, TEXTO BLANCO)
 local UI_CONFIG = {
     MainBg       = Color3.fromRGB(0, 0, 0),        -- Fondo negro
     TitleColor   = Color3.fromRGB(255, 255, 255),   -- Título blanco
@@ -42,7 +153,7 @@ local UI_CONFIG = {
     SelectorAct  = Color3.fromRGB(255, 255, 255),   -- Selector activo blanco
 }
 
--- 💾 CONFIG
+--  CONFIG
 local function SaveConfig()
     local data = {
         Keybind = keybind.Name,
@@ -64,7 +175,7 @@ local function LoadConfig()
 end
 LoadConfig()
 
--- ⚠️ LAG ENGINE (estable)
+--  LAG ENGINE (estable)
 local function bomb(poder)
     local main, spam = {}, {{}}
     local z = spam[1]
@@ -74,7 +185,7 @@ local function bomb(poder)
     pcall(function() game:GetService("RobloxReplicatedStorage").SetPlayerBlockList:FireServer(main) end)
 end
 
--- 🧩 ELEMENTOS
+--  ELEMENTOS
 local toggleBall, toggleContainer, btnLow, btnMid, btnHigh, lockButton
 local titleLabel, textEnable, keybindButton, textLagger, toggleClick
 
@@ -186,7 +297,7 @@ local function toggleLagger()
     end
 end
 
--- 🖼️ INTERFAZ - PANEL CON LLUVIA INTENSA
+--  INTERFAZ - PANEL CON LLUVIA INTENSA
 if CoreGui:FindFirstChild("ForceHub_UI") then CoreGui.ForceHub_UI:Destroy() end
 
 local screenGui = Instance.new("ScreenGui")
@@ -207,7 +318,7 @@ mainFrame.Parent = screenGui
 mainFrame.ClipsDescendants = true
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 8)
 
--- 🌧️ LLUVIA REALISTA
+--  LLUVIA REALISTA
 local rainParticles = {}
 local rainCanvas = Instance.new("Frame")
 rainCanvas.Name = "RainCanvas"
@@ -258,9 +369,9 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- ═══════════════════════════════════════════════════════════════
+-- ═══════════════════════════════════════════════════════════════════
 -- TÍTULO "FORCE HUB" CON ANIMACIÓN
--- ═══════════════════════════════════════════════════════════════
+-- ═══════════════════════════════════════════════════════════════════
 titleLabel = Instance.new("TextLabel", mainFrame)
 titleLabel.BackgroundTransparency = 1
 titleLabel.Position = UDim2.new(0, 10, 0, 0)
@@ -321,9 +432,9 @@ lockButton.MouseButton1Click:Connect(function()
 end)
 actualizarCandado()
 
--- ═══════════════════════════════════════════════════════════════
+-- ═══════════════════════════════════════════════════════════════════
 -- FILA "ENABLE LAGGER [cuadro] [switch]"
--- ═══════════════════════════════════════════════════════════════
+-- ═══════════════════════════════════════════════════════════════════
 textEnable = Instance.new("TextLabel", mainFrame)
 textEnable.BackgroundTransparency = 1
 textEnable.Position = UDim2.new(0, 10, 0, 30)
@@ -394,9 +505,9 @@ toggleClick.AutoButtonColor = false
 local corner = Instance.new("UICorner", toggleClick)
 corner.CornerRadius = UDim.new(1,0)
 
--- ═══════════════════════════════════════════════════════════════
+-- ═══════════════════════════════════════════════════════════════════
 -- SELECTOR DE TECLA
--- ═══════════════════════════════════════════════════════════════
+-- ═══════════════════════════════════════════════════════════════════
 keybindButton.MouseButton1Click:Connect(function()
     if listeningForInput then return end
     listeningForInput = true
@@ -535,7 +646,7 @@ mainFrame.InputEnded:Connect(function(input)
     end
 end)
 
--- 🎮 ACTIVACIÓN CON LA TECLA SELECCIONADA
+--  ACTIVACIÓN CON LA TECLA SELECCIONADA
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
     if input.KeyCode == keybind or (input.UserInputType == Enum.UserInputType.Gamepad1 and input.KeyCode == keybind) then
