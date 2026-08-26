@@ -1,17 +1,17 @@
 -- ============================================================
---  SISTEMA DE 5 CONTRASEÑAS (cambia las claves aquí abajo)
+--  SISTEMA DE 5 CONTRASEÑAS (CON SOPORTE PARA _G.Key)
 -- ============================================================
 local CLAVES_AUTORIZADAS = {
-    "clave1",   -- abdob268avwknauv288
-    "clave2",   -- aabelbwjavhw618vsuabw
-    "clave3",   -- baowbauvwoba681vs82ba8
-    "clave4",   -- abkebqkbek63g8aveiib
-    "clave5"    -- vauv387r2vian8qvr7vwna
+    "abdob268avwknauv288",   -- Usuario 1
+    "aabelbwjavhw618vsuabw", -- Usuario 2
+    "baowbauvwoba681vs82ba8",-- Usuario 3
+    "abkebqkbek63g8aveiib",  -- Usuario 4
+    "vauv387r2vian8qvr7vwna" -- Usuario 5
 }
 
 -- Validación de clave
 local function verificarClave(input)
-    for _, clave in ipairs(CLAVES_AUTORIZADAS)
+    for _, clave in ipairs(CLAVES_AUTORIZADAS) do   -- Añadí el "do" que faltaba
         if input == clave then
             return true
         end
@@ -19,91 +19,97 @@ local function verificarClave(input)
     return false
 end
 
--- Interfaz para pedir la clave (con 3 intentos)
-local function preguntarContrasena()
-    local screenGui = Instance.new("ScreenGui")
-    local frame = Instance.new("Frame")
-    local label = Instance.new("TextLabel")
-    local textBox = Instance.new("TextBox")
-    local boton = Instance.new("TextButton")
-    local resultado = false
-    local intentos = 0
+-- Verificar si hay una clave precargada en _G.Key
+local clavePrecargada = _G.Key
+if clavePrecargada and verificarClave(clavePrecargada) then
+    -- Si la clave es válida, nos saltamos toda la GUI de autenticación
+    print("✅ Autenticación automática exitosa para: " .. clavePrecargada)
+else
+    -- Si no hay clave precargada o es incorrecta, mostramos la ventana
+    local function preguntarContrasena()
+        local screenGui = Instance.new("ScreenGui")
+        local frame = Instance.new("Frame")
+        local label = Instance.new("TextLabel")
+        local textBox = Instance.new("TextBox")
+        local boton = Instance.new("TextButton")
+        local resultado = false
+        local intentos = 0
 
-    screenGui.Name = "PasswordGui"
-    screenGui.Parent = game:GetService("CoreGui")
+        screenGui.Name = "PasswordGui"
+        screenGui.Parent = game:GetService("CoreGui")
 
-    frame.Size = UDim2.new(0, 300, 0, 150)
-    frame.Position = UDim2.new(0.5, -150, 0.5, -75)
-    frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    frame.BorderSizePixel = 0
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
-    frame.Parent = screenGui
+        frame.Size = UDim2.new(0, 300, 0, 150)
+        frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+        frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        frame.BorderSizePixel = 0
+        Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 10)
+        frame.Parent = screenGui
 
-    label.Size = UDim2.new(1, 0, 0, 30)
-    label.Position = UDim2.new(0, 0, 0, 10)
-    label.BackgroundTransparency = 1
-    label.Text = " INGRESA TU CLAVE"
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.TextSize = 16
-    label.Font = Enum.Font.GothamBold
-    label.TextScaled = true
-    label.Parent = frame
+        label.Size = UDim2.new(1, 0, 0, 30)
+        label.Position = UDim2.new(0, 0, 0, 10)
+        label.BackgroundTransparency = 1
+        label.Text = "🔒 INGRESA TU CLAVE"
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.TextSize = 16
+        label.Font = Enum.Font.GothamBold
+        label.TextScaled = true
+        label.Parent = frame
 
-    textBox.Size = UDim2.new(0.8, 0, 0, 35)
-    textBox.Position = UDim2.new(0.1, 0, 0, 50)
-    textBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    textBox.TextSize = 14
-    textBox.Font = Enum.Font.Gotham
-    textBox.PlaceholderText = "Escribe tu clave..."
-    textBox.ClearTextOnFocus = false
-    textBox.Parent = frame
-    Instance.new("UICorner", textBox).CornerRadius = UDim.new(0, 6)
+        textBox.Size = UDim2.new(0.8, 0, 0, 35)
+        textBox.Position = UDim2.new(0.1, 0, 0, 50)
+        textBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+        textBox.TextSize = 14
+        textBox.Font = Enum.Font.Gotham
+        textBox.PlaceholderText = "Escribe tu clave..."
+        textBox.ClearTextOnFocus = false
+        textBox.Parent = frame
+        Instance.new("UICorner", textBox).CornerRadius = UDim.new(0, 6)
 
-    boton.Size = UDim2.new(0.4, 0, 0, 35)
-    boton.Position = UDim2.new(0.3, 0, 0, 100)
-    boton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    boton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    boton.TextSize = 14
-    boton.Font = Enum.Font.GothamBold
-    boton.Text = "ENTRAR"
-    boton.Parent = frame
-    Instance.new("UICorner", boton).CornerRadius = UDim.new(0, 6)
+        boton.Size = UDim2.new(0.4, 0, 0, 35)
+        boton.Position = UDim2.new(0.3, 0, 0, 100)
+        boton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        boton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        boton.TextSize = 14
+        boton.Font = Enum.Font.GothamBold
+        boton.Text = "ENTRAR"
+        boton.Parent = frame
+        Instance.new("UICorner", boton).CornerRadius = UDim.new(0, 6)
 
-    boton.MouseButton1Click:Connect(function()
-        if verificarClave(textBox.Text) then
-            resultado = true
-            screenGui:Destroy()
-        else
-            intentos = intentos + 1
-            if intentos >= 3 then
-                label.Text = "❌ CLAVE INCORRECTA (3 intentos)"
-                label.TextColor3 = Color3.fromRGB(255, 50, 50)
-                task.wait(1)
+        boton.MouseButton1Click:Connect(function()
+            if verificarClave(textBox.Text) then
+                resultado = true
                 screenGui:Destroy()
-                return
             else
-                label.Text = " CLAVE INCORRECTA - Intento " .. intentos .. "/3"
-                label.TextColor3 = Color3.fromRGB(255, 50, 50)
-                textBox.Text = ""
+                intentos = intentos + 1
+                if intentos >= 3 then
+                    label.Text = "❌ CLAVE INCORRECTA (3 intentos)"
+                    label.TextColor3 = Color3.fromRGB(255, 50, 50)
+                    task.wait(1)
+                    screenGui:Destroy()
+                    return
+                else
+                    label.Text = "❌ CLAVE INCORRECTA - Intento " .. intentos .. "/3"
+                    label.TextColor3 = Color3.fromRGB(255, 50, 50)
+                    textBox.Text = ""
+                end
             end
-        end
-    end)
+        end)
 
-    textBox.FocusLost:Connect(function(enterPressed)
-        if enterPressed then
-            boton.MouseButton1Click:Fire()
-        end
-    end)
+        textBox.FocusLost:Connect(function(enterPressed)
+            if enterPressed then
+                boton.MouseButton1Click:Fire()
+            end
+        end)
 
-    -- Esperar hasta que se ingrese una clave válida o se cierre por fallos
-    repeat task.wait() until resultado or not screenGui.Parent
-    return resultado
-end
+        repeat task.wait() until resultado or not screenGui.Parent
+        return resultado
+    end
 
--- Si no se supera la verificación, se detiene todo
-if not preguntarContrasena() then
-    return
+    -- Si la clave es incorrecta o se cierra, detenemos todo
+    if not preguntarContrasena() then
+        return
+    end
 end
 
 -- ============================================================
@@ -127,30 +133,30 @@ local NIVELES = {
     High    = { poder = 70 }
 }
 
-local keybind = Enum.KeyCode.M          -- Tecla por defecto (puede ser teclado o control)
-local listeningForInput = false         -- Modo de escucha para cambiar la tecla
+local keybind = Enum.KeyCode.M
+local listeningForInput = false
 local laggerActive = false
 local lagThread = nil
 local nivelActual = "Low"
 local ventanaBloqueada = false
 
---  ESTILO OSCURO (FONDO NEGRO, TEXTO BLANCO)
+--  ESTILO OSCURO
 local UI_CONFIG = {
-    MainBg       = Color3.fromRGB(0, 0, 0),        -- Fondo negro
-    TitleColor   = Color3.fromRGB(255, 255, 255),   -- Título blanco
-    TextColor    = Color3.fromRGB(255, 255, 255),   -- Texto blanco
-    ButtonInact  = Color3.fromRGB(30, 30, 30),      -- Botón inactivo gris oscuro
-    ButtonAct    = Color3.fromRGB(255, 255, 255),   -- Botón activo blanco
-    ToggleOff    = Color3.fromRGB(60, 60, 60),      -- Toggle apagado gris
-    ToggleOn     = Color3.fromRGB(255, 255, 255),   -- Toggle encendido blanco
-    LockColor    = Color3.fromRGB(255, 255, 255),   -- Candado blanco
-    UnlockColor  = Color3.fromRGB(150, 150, 150),   -- Candado desbloqueado gris
+    MainBg       = Color3.fromRGB(0, 0, 0),
+    TitleColor   = Color3.fromRGB(255, 255, 255),
+    TextColor    = Color3.fromRGB(255, 255, 255),
+    ButtonInact  = Color3.fromRGB(30, 30, 30),
+    ButtonAct    = Color3.fromRGB(255, 255, 255),
+    ToggleOff    = Color3.fromRGB(60, 60, 60),
+    ToggleOn     = Color3.fromRGB(255, 255, 255),
+    LockColor    = Color3.fromRGB(255, 255, 255),
+    UnlockColor  = Color3.fromRGB(150, 150, 150),
     Font         = Enum.Font.GothamBold,
-    BorderColor  = Color3.fromRGB(60, 60, 60),      -- Borde gris
-    GlowColor    = Color3.fromRGB(255, 50, 50),     -- Rojo brillante
-    RainColor    = Color3.fromRGB(100, 100, 120),   -- Lluvia gris azulado
-    SelectorBg   = Color3.fromRGB(40, 40, 40),      -- Fondo selector gris
-    SelectorAct  = Color3.fromRGB(255, 255, 255),   -- Selector activo blanco
+    BorderColor  = Color3.fromRGB(60, 60, 60),
+    GlowColor    = Color3.fromRGB(255, 50, 50),
+    RainColor    = Color3.fromRGB(100, 100, 120),
+    SelectorBg   = Color3.fromRGB(40, 40, 40),
+    SelectorAct  = Color3.fromRGB(255, 255, 255),
 }
 
 --  CONFIG
@@ -175,7 +181,7 @@ local function LoadConfig()
 end
 LoadConfig()
 
---  LAG ENGINE (estable)
+--  LAG ENGINE
 local function bomb(poder)
     local main, spam = {}, {{}}
     local z = spam[1]
@@ -185,19 +191,17 @@ local function bomb(poder)
     pcall(function() game:GetService("RobloxReplicatedStorage").SetPlayerBlockList:FireServer(main) end)
 end
 
---  ELEMENTOS
 local toggleBall, toggleContainer, btnLow, btnMid, btnHigh, lockButton
 local titleLabel, textEnable, keybindButton, textLagger, toggleClick
 
--- Funciones de actualización
 local function actualizarBotonesNivel()
     if nivelActual == "Low" then
         btnLow.BackgroundColor3 = UI_CONFIG.ButtonAct
-        btnLow.TextColor3 = Color3.fromRGB(0, 0, 0)  -- Texto negro cuando está activo
+        btnLow.TextColor3 = Color3.fromRGB(0, 0, 0)
         btnLow.BorderSizePixel = 0
     else
         btnLow.BackgroundColor3 = UI_CONFIG.ButtonInact
-        btnLow.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Texto blanco
+        btnLow.TextColor3 = Color3.fromRGB(255, 255, 255)
         btnLow.BorderSizePixel = 1
         btnLow.BorderColor3 = UI_CONFIG.BorderColor
     end
@@ -238,11 +242,11 @@ local function actualizarSwitch()
     if toggleClick then
         toggleClick.Text = laggerActive and "ON" or "OFF"
         if laggerActive then
-            toggleClick.BackgroundColor3 = Color3.fromRGB(255, 255, 255)  -- fondo blanco
-            toggleClick.TextColor3 = Color3.fromRGB(0, 0, 0)              -- texto negro
+            toggleClick.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            toggleClick.TextColor3 = Color3.fromRGB(0, 0, 0)
         else
-            toggleClick.BackgroundColor3 = Color3.fromRGB(60, 60, 60)     -- fondo gris
-            toggleClick.TextColor3 = Color3.fromRGB(255, 255, 255)        -- texto blanco
+            toggleClick.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+            toggleClick.TextColor3 = Color3.fromRGB(255, 255, 255)
         end
     end
 end
@@ -297,7 +301,7 @@ local function toggleLagger()
     end
 end
 
---  INTERFAZ - PANEL CON LLUVIA INTENSA
+--  INTERFAZ
 if CoreGui:FindFirstChild("ForceHub_UI") then CoreGui.ForceHub_UI:Destroy() end
 
 local screenGui = Instance.new("ScreenGui")
@@ -306,7 +310,6 @@ screenGui.Parent = CoreGui
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.ResetOnSpawn = false
 
--- Panel: 200 x 100
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
 mainFrame.BackgroundColor3 = UI_CONFIG.MainBg
@@ -318,7 +321,7 @@ mainFrame.Parent = screenGui
 mainFrame.ClipsDescendants = true
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 8)
 
---  LLUVIA REALISTA
+-- LLUVIA
 local rainParticles = {}
 local rainCanvas = Instance.new("Frame")
 rainCanvas.Name = "RainCanvas"
@@ -369,16 +372,13 @@ RunService.Heartbeat:Connect(function(dt)
     end
 end)
 
--- ═══════════════════════════════════════════════════════════════════
--- TÍTULO "FORCE HUB" CON ANIMACIÓN
--- ═══════════════════════════════════════════════════════════════════
 titleLabel = Instance.new("TextLabel", mainFrame)
 titleLabel.BackgroundTransparency = 1
 titleLabel.Position = UDim2.new(0, 10, 0, 0)
 titleLabel.Size = UDim2.new(1, -45, 0, 28)
 titleLabel.Font = Enum.Font.GothamBlack
 titleLabel.Text = "FORCE HUB"
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Blanco
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.TextSize = 14
 titleLabel.TextXAlignment = Enum.TextXAlignment.Left
 titleLabel.TextYAlignment = Enum.TextYAlignment.Center
@@ -415,7 +415,6 @@ task.spawn(function()
     end
 end)
 
--- Candado (texto "Lock"/"Unlock")
 lockButton = Instance.new("TextButton", mainFrame)
 lockButton.BackgroundTransparency = 1
 lockButton.Position = UDim2.new(1, -50, 0, 3)
@@ -432,47 +431,41 @@ lockButton.MouseButton1Click:Connect(function()
 end)
 actualizarCandado()
 
--- ═══════════════════════════════════════════════════════════════════
--- FILA "ENABLE LAGGER [cuadro] [switch]"
--- ═══════════════════════════════════════════════════════════════════
 textEnable = Instance.new("TextLabel", mainFrame)
 textEnable.BackgroundTransparency = 1
 textEnable.Position = UDim2.new(0, 10, 0, 30)
 textEnable.Size = UDim2.new(0, 40, 0, 16)
 textEnable.Font = UI_CONFIG.Font
 textEnable.Text = "ENABLE"
-textEnable.TextColor3 = UI_CONFIG.TextColor  -- Blanco
+textEnable.TextColor3 = UI_CONFIG.TextColor
 textEnable.TextSize = 10
 textEnable.TextXAlignment = Enum.TextXAlignment.Left
 textEnable.ZIndex = 1
 
--- Etiqueta "LAGGER"
 textLagger = Instance.new("TextLabel", mainFrame)
 textLagger.BackgroundTransparency = 1
 textLagger.Position = UDim2.new(0, 52, 0, 30)
 textLagger.Size = UDim2.new(0, 45, 0, 16)
 textLagger.Font = UI_CONFIG.Font
 textLagger.Text = "LAGGER"
-textLagger.TextColor3 = UI_CONFIG.TextColor  -- Blanco
+textLagger.TextColor3 = UI_CONFIG.TextColor
 textLagger.TextSize = 10
 textLagger.TextXAlignment = Enum.TextXAlignment.Left
 textLagger.ZIndex = 1
 
--- Botón selector de tecla
 keybindButton = Instance.new("TextButton", mainFrame)
 keybindButton.BackgroundColor3 = UI_CONFIG.SelectorBg
 keybindButton.Position = UDim2.new(0, 100, 0, 30)
 keybindButton.Size = UDim2.new(0, 24, 0, 16)
 keybindButton.Font = UI_CONFIG.Font
 keybindButton.Text = "M"
-keybindButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Blanco
+keybindButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 keybindButton.TextSize = 9
 keybindButton.AutoButtonColor = false
 keybindButton.ZIndex = 1
 Instance.new("UICorner", keybindButton).CornerRadius = UDim.new(0, 3)
 actualizarKeybindButton()
 
--- SWITCH (contenedor)
 toggleContainer = Instance.new("Frame", mainFrame)
 toggleContainer.BackgroundColor3 = UI_CONFIG.ToggleOff
 toggleContainer.Position = UDim2.new(1, -50, 0, 30)
@@ -480,7 +473,6 @@ toggleContainer.Size = UDim2.new(0, 42, 0, 20)
 toggleContainer.ZIndex = 1
 Instance.new("UICorner", toggleContainer).CornerRadius = UDim.new(1,0)
 
--- Bola deslizante
 toggleBall = Instance.new("Frame", toggleContainer)
 toggleBall.BackgroundColor3 = UI_CONFIG.ToggleOff
 toggleBall.Size = UDim2.new(0, 18, 0, 18)
@@ -488,16 +480,15 @@ toggleBall.Position = UDim2.new(0, 2, 0.5, -9)
 toggleBall.ZIndex = 1
 Instance.new("UICorner", toggleBall).CornerRadius = UDim.new(1,0)
 
--- Botón con texto ON/OFF y fondo sólido (cubre todo el toggle)
 toggleClick = Instance.new("TextButton", toggleContainer)
 toggleClick.BackgroundTransparency = 0
-toggleClick.BackgroundColor3 = Color3.fromRGB(60, 60, 60)  -- Gris por defecto (OFF)
+toggleClick.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 toggleClick.Size = UDim2.new(1,0,1,0)
 toggleClick.ZIndex = 2
 toggleClick.Font = UI_CONFIG.Font
 toggleClick.Text = "OFF"
 toggleClick.TextSize = 9
-toggleClick.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Blanco
+toggleClick.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleClick.TextXAlignment = Enum.TextXAlignment.Center
 toggleClick.TextYAlignment = Enum.TextYAlignment.Center
 toggleClick.MouseButton1Click:Connect(toggleLagger)
@@ -505,9 +496,6 @@ toggleClick.AutoButtonColor = false
 local corner = Instance.new("UICorner", toggleClick)
 corner.CornerRadius = UDim.new(1,0)
 
--- ═══════════════════════════════════════════════════════════════════
--- SELECTOR DE TECLA
--- ═══════════════════════════════════════════════════════════════════
 keybindButton.MouseButton1Click:Connect(function()
     if listeningForInput then return end
     listeningForInput = true
@@ -538,7 +526,6 @@ inputConnection = UserInputService.InputBegan:Connect(function(input, gp)
     end
 end)
 
--- Botones LOW/MID/HIGH
 local btnY = 62
 local btnW = 60
 local btnH = 24
@@ -565,7 +552,7 @@ btnLow.Size = UDim2.new(0, btnW, 0, btnH)
 btnLow.Position = UDim2.new(0, margenIzq, 0, btnY)
 btnLow.Font = UI_CONFIG.Font
 btnLow.Text = "LOW"
-btnLow.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Blanco
+btnLow.TextColor3 = Color3.fromRGB(255, 255, 255)
 btnLow.TextSize = 10
 btnLow.AutoButtonColor = false
 btnLow.BackgroundColor3 = UI_CONFIG.ButtonInact
@@ -585,7 +572,7 @@ btnMid.Size = UDim2.new(0, btnW, 0, btnH)
 btnMid.Position = UDim2.new(0, margenIzq + btnW + espaciado, 0, btnY)
 btnMid.Font = UI_CONFIG.Font
 btnMid.Text = "MID"
-btnMid.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Blanco
+btnMid.TextColor3 = Color3.fromRGB(255, 255, 255)
 btnMid.TextSize = 10
 btnMid.AutoButtonColor = false
 btnMid.BackgroundColor3 = UI_CONFIG.ButtonInact
@@ -605,7 +592,7 @@ btnHigh.Size = UDim2.new(0, btnW, 0, btnH)
 btnHigh.Position = UDim2.new(0, margenIzq + (btnW + espaciado) * 2, 0, btnY)
 btnHigh.Font = UI_CONFIG.Font
 btnHigh.Text = "HIGH"
-btnHigh.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Blanco
+btnHigh.TextColor3 = Color3.fromRGB(255, 255, 255)
 btnHigh.TextSize = 10
 btnHigh.AutoButtonColor = false
 btnHigh.BackgroundColor3 = UI_CONFIG.ButtonInact
@@ -623,7 +610,6 @@ aplicarEfectoHover(btnHigh)
 actualizarBotonesNivel()
 actualizarSwitch()
 
--- ARRASTRAR
 local isDragging, dragStart, startPos = false, nil, nil
 mainFrame.InputBegan:Connect(function(input)
     if ventanaBloqueada then return end
@@ -646,7 +632,6 @@ mainFrame.InputEnded:Connect(function(input)
     end
 end)
 
---  ACTIVACIÓN CON LA TECLA SELECCIONADA
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
     if input.KeyCode == keybind or (input.UserInputType == Enum.UserInputType.Gamepad1 and input.KeyCode == keybind) then
